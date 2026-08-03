@@ -45,10 +45,23 @@ src/game/
   animator.ts   turns engine events into tweened sprites (also DOM-free)
   renderer.ts   draws the board
   game.ts       frame loop, pointer input, level definitions
-src/main.ts     HUD wiring, level progression, service worker registration
+src/progress.ts saved progress and the rules the menu reads off it (no DOM)
+src/menu.ts     menu, match picker and how-to-play — plain DOM over the canvas
+src/scatter.ts  the menu's roll-in balls
+src/main.ts     entry point: menu first, HUD wiring, service worker registration
 test/           node:test, run straight off the TypeScript sources
 scripts/        icon and service-worker generation
 ```
+
+The canvas is used for gameplay only. The menu and its sub-screens are ordinary
+DOM layered over it, which keeps their state in the place the platform already
+manages it — focus, scrolling and `Escape` come for free.
+
+One note on type: the display face is a stack of system-installed condensed
+fonts. `"Barlow Condensed"` leads it and will be used by anyone who has it, but
+no webfont is shipped — downloading one would put a network dependency in front
+of a game that is meant to work offline. Self-hosting a subset woff2 and adding
+it to the precache list is the fix if the exact face matters.
 
 `src/match3` never imports anything from `src/game`, and holds no reference to
 the DOM. That is what lets the engine tests run in plain Node, and it is what

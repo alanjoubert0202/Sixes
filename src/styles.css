@@ -10,10 +10,12 @@
   --gold: #f3c24b;
   --gold-deep: #c8942a;
 
-  /* A condensed display face for the scoreboard. All system-installed, so the
-     app still looks right with no network. */
-  --display: "Haettenschweiler", "Arial Narrow", "Roboto Condensed", "Oswald",
-    "DIN Condensed", "Impact", system-ui, sans-serif;
+  /* A condensed display face for the scoreboard and the menu title. Every
+     entry is system-installed, so the app still looks right with no network —
+     "Barlow Condensed" leads the stack and is used where the player happens to
+     have it, but it is not shipped (see README). */
+  --display: "Barlow Condensed", "Haettenschweiler", "Arial Narrow", "Roboto Condensed",
+    "Oswald", "DIN Condensed", "Impact", system-ui, sans-serif;
   --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --safe-top: env(safe-area-inset-top, 0px);
@@ -220,6 +222,28 @@ body {
   background: var(--gold-deep);
 }
 
+/* The quiet variant. Identical to a bare .btn — named so the menu markup can
+   say which role each button is playing. */
+.btn--ghost {
+  background: rgba(238, 243, 236, 0.06);
+  border-color: var(--chalk-faint);
+  color: var(--chalk);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.btn[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn[disabled]:active {
+  transform: none;
+}
+
 .tagline {
   margin: 0;
   text-align: center;
@@ -314,6 +338,300 @@ body {
   gap: 0.6rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* --- Menu, picker and how-to screens ------------------------------------ */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  padding:
+    calc(var(--safe-top) + 1rem)
+    calc(var(--safe-right) + 1.25rem)
+    calc(var(--safe-bottom) + 1.25rem)
+    calc(var(--safe-left) + 1.25rem);
+  overflow: hidden;
+}
+
+.screen[hidden] {
+  display: none;
+}
+
+/*
+ * The same ground the canvas paints in `Renderer.drawPitch`: a vertical
+ * gradient from a lighter top to near-black, with faint chalk markings. The
+ * mown stripes are the one addition — the canvas does not draw them (see
+ * README), so they are kept at the very edge of visibility to sit alongside it
+ * rather than compete with it.
+ */
+.pitch {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(238, 243, 236, 0.016) 0 8%,
+      rgba(238, 243, 236, 0) 8% 16%
+    ),
+    linear-gradient(180deg, #062a28 0%, var(--pitch) 55%, var(--pitch-deep) 100%);
+  background-color: var(--pitch-deep);
+}
+
+/* The chalk centre circle, matching the one the renderer draws. */
+.pitch::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(84vw, 84vh);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: 2px solid rgba(238, 243, 236, 0.055);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Keeps type legible over whatever the scatter drops behind it. */
+.pitch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 68% 42% at 50% 45%,
+    rgba(2, 16, 15, 0.82) 0%,
+    rgba(2, 16, 15, 0.55) 45%,
+    rgba(2, 16, 15, 0) 78%
+  );
+  pointer-events: none;
+}
+
+.scatter {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scatter-ball {
+  position: absolute;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* --- Menu --------------------------------------------------------------- */
+
+.menu {
+  position: relative;
+  z-index: 2;
+  margin: auto;
+  width: min(20rem, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+}
+
+.menu-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(4.5rem, 26vw, 7.5rem);
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  text-shadow: 0 0.75rem 2.5rem rgba(2, 16, 15, 0.9);
+}
+
+.menu-caption {
+  margin: 0.85rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--chalk-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.menu-caption[hidden] {
+  display: none;
+}
+
+.menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 2rem;
+}
+
+.menu-actions .btn {
+  width: 100%;
+  padding-block: 0.85rem;
+  font-size: 0.875rem;
+}
+
+.menu-actions .btn[hidden] {
+  display: none;
+}
+
+/* --- Sub-screen chrome -------------------------------------------------- */
+
+.screen-head {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.screen-head::after {
+  /* Empty third track, so the equal 1fr sides keep the title centred
+     regardless of how wide the Back button is. */
+  content: "";
+}
+
+.btn--back {
+  justify-self: start;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.75rem;
+}
+
+.screen-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 7vw, 2rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--chalk);
+}
+
+/* --- Match picker ------------------------------------------------------- */
+
+.picker {
+  position: relative;
+  z-index: 2;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 0 1rem;
+  width: min(26rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  /* Without this a flex child refuses to shrink below its content, and the
+     list runs off the bottom of a short screen instead of scrolling. */
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pick {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 1.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--chalk-faint);
+  border-radius: 0.75rem;
+  background: rgba(238, 243, 236, 0.05);
+  color: var(--chalk);
+  font-family: var(--ui);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.pick:active {
+  transform: scale(0.985);
+  background: rgba(238, 243, 236, 0.12);
+}
+
+.pick:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.pick-no {
+  font-family: var(--display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--chalk-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.pick-name {
+  letter-spacing: 0.02em;
+}
+
+.pick-state {
+  display: grid;
+  place-items: center;
+  color: var(--chalk-dim);
+}
+
+.pick-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.pick--cleared .pick-no,
+.pick--cleared .pick-state {
+  color: var(--gold);
+}
+
+.pick--locked {
+  cursor: default;
+  opacity: 0.45;
+  background: transparent;
+}
+
+.pick--locked:active {
+  transform: none;
+  background: transparent;
+}
+
+/* --- How to play -------------------------------------------------------- */
+
+.howto {
+  position: relative;
+  z-index: 2;
+  margin: auto;
+  width: min(24rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.howto-line {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--chalk-dim);
+  padding-left: 1rem;
+  border-left: 2px solid var(--chalk-faint);
+}
+
+.howto-line strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+@media (max-height: 620px) {
+  .menu-actions {
+    margin-top: 1.25rem;
+  }
+  .menu-title {
+    font-size: clamp(3.25rem, 18vw, 5rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

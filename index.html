@@ -19,7 +19,42 @@
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
-    <div id="app">
+    <div class="screen pitch" id="screen-menu">
+      <div class="scatter" id="scatter" aria-hidden="true"></div>
+      <div class="menu">
+        <h1 class="menu-title">Sixes</h1>
+        <p class="menu-caption" id="menu-caption" hidden></p>
+        <nav class="menu-actions" aria-label="Main menu">
+          <button class="btn btn--primary" id="menu-resume" type="button" hidden>Resume</button>
+          <button class="btn btn--primary" id="menu-new" type="button">New Game</button>
+          <button class="btn btn--ghost" id="menu-select" type="button">Select Match</button>
+          <button class="btn btn--ghost" id="menu-howto" type="button">How to Play</button>
+        </nav>
+      </div>
+    </div>
+
+    <div class="screen pitch" id="screen-picker" hidden>
+      <header class="screen-head">
+        <button class="btn btn--ghost btn--back" id="picker-back" type="button">Back</button>
+        <h2 class="screen-title">Select Match</h2>
+      </header>
+      <ul class="picker" id="picker-list"></ul>
+    </div>
+
+    <div class="screen pitch" id="screen-howto" hidden>
+      <header class="screen-head">
+        <button class="btn btn--ghost btn--back" id="howto-back" type="button">Back</button>
+        <h2 class="screen-title">How to Play</h2>
+      </header>
+      <div class="howto">
+        <p class="howto-line">Swap two neighbouring balls to line up three or more of a kind.</p>
+        <p class="howto-line">Four in a line earns a <strong>Striker</strong> — it sweeps a whole row or column.</p>
+        <p class="howto-line">Five in a line earns a <strong>Match Ball</strong> — it clears every ball of one kind.</p>
+        <p class="howto-line">An L or T shape earns a <strong>Scrum</strong> — it blows out everything around it.</p>
+      </div>
+    </div>
+
+    <div id="app" hidden>
       <header class="hud">
         <div class="hud-row">
           <div class="stat stat--level">
@@ -64,8 +99,9 @@
         <p class="card-score" id="overlay-score">0</p>
         <p class="card-body" id="overlay-body">You cleared the pitch.</p>
         <div class="card-actions">
-          <button class="btn btn--primary" id="overlay-primary" type="button">Next level</button>
-          <button class="btn" id="overlay-secondary" type="button">Replay</button>
+          <button class="btn btn--primary" id="overlay-primary" type="button">Next match</button>
+          <button class="btn btn--ghost" id="overlay-secondary" type="button">Replay</button>
+          <button class="btn btn--ghost" id="overlay-menu" type="button">Menu</button>
         </div>
       </div>
     </div>

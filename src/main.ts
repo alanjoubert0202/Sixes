@@ -1,51 +1,38 @@
 import { Game, LEVELS } from './game/game.ts';
 import type { Level } from './game/game.ts';
 import type { CreatedSpecial, Special } from './match3/types.ts';
+import { Menu } from './menu.ts';
+import {
+  clampLevel,
+  clearProgress,
+  emptyProgress,
+  loadProgress,
+  recordScore,
+  recordWin,
+  saveProgress,
+} from './progress.ts';
+import type { StorageLike } from './progress.ts';
 
 /**
- * HUD wiring and level progression. Everything below the DOM layer lives in
- * `src/game`, and the rules live in `src/match3`.
+ * Entry point: shows the menu, and runs a match when one is chosen.
+ *
+ * The pre-game screens are plain DOM (see `menu.ts`); the canvas is only ever
+ * used for gameplay. Rules live in `src/match3`, presentation in `src/game`.
  */
 
-const STORAGE_KEY = 'sixes.progress.v1';
-
-interface Progress {
-  level: number;
-  best: number;
-  cleared: number[];
-}
-
-function loadProgress(): Progress {
-  const fallback: Progress = { level: 1, best: 0, cleared: [] };
+const storage: StorageLike | null = (() => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return fallback;
-    const parsed = JSON.parse(raw) as Partial<Progress>;
-    return {
-      level: clampLevel(Number(parsed.level) || 1),
-      best: Math.max(0, Number(parsed.best) || 0),
-      cleared: Array.isArray(parsed.cleared) ? parsed.cleared.filter((n) => typeof n === 'number') : [],
-    };
+    // Touching localStorage at all throws in some privacy modes.
+    const probe = window.localStorage;
+    probe.getItem('sixes.probe');
+    return probe;
   } catch {
-    // A private-mode browser or corrupt entry should never block a game.
-    return fallback;
+    return null;
   }
-}
-
-function saveProgress(progress: Progress): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  } catch {
-    /* storage is a nicety, not a requirement */
-  }
-}
-
-function clampLevel(id: number): number {
-  return Math.min(Math.max(Math.round(id), 1), LEVELS.length);
-}
+})();
 
 function levelById(id: number): Level {
-  return LEVELS[clampLevel(id) - 1];
+  return LEVELS[clampLevel(id, LEVELS.length) - 1];
 }
 
 // ---------------------------------------------------------------------------
@@ -75,9 +62,10 @@ const overlayScore = el('overlay-score');
 const overlayBody = el('overlay-body');
 const overlayPrimary = el<HTMLButtonElement>('overlay-primary');
 const overlaySecondary = el<HTMLButtonElement>('overlay-secondary');
+const overlayMenu = el<HTMLButtonElement>('overlay-menu');
 
 const numbers = new Intl.NumberFormat('en-GB');
-let progress = loadProgress();
+let progress = loadProgress(storage, LEVELS.length);
 let game: Game | null = null;
 let toastTimer = 0;
 
@@ -89,6 +77,8 @@ const SPECIAL_SHOUT: Record<Special, string> = {
   hattrick: 'Hat-trick!',
 };
 
+// ---------------------------------------------------------------------------
+// HUD
 // ---------------------------------------------------------------------------
 
 function bump(node: HTMLElement): void {
@@ -140,6 +130,27 @@ function renderSpecials(created: CreatedSpecial[]): void {
 }
 
 // ---------------------------------------------------------------------------
+// Screens
+// ---------------------------------------------------------------------------
+
+const menu = new Menu(progress, {
+  onResume: (level) => startLevel(level),
+  onNewGame: () => {
+    clearProgress(storage);
+    progress = emptyProgress();
+    menu.update(progress);
+    startLevel(1);
+  },
+  onPick: (level) => startLevel(level),
+});
+
+function showMenu(): void {
+  overlay.hidden = true;
+  game?.destroy();
+  game = null;
+  menu.update(progress);
+  menu.show('menu');
+}
 
 /**
  * The seed decides the board. Level and attempt go into it so a replay is a
@@ -155,6 +166,10 @@ function startLevel(id: number, attempt = Date.now() % 100_000): void {
   overlay.hidden = true;
   game?.destroy();
 
+  // Hand the view back to the canvas *before* starting, so the board can
+  // measure its container — a hidden parent has no size to fit to.
+  menu.show('game');
+
   game = new Game(canvas, level, seedFor(level, attempt), {
     onLevel: renderLevel,
     onScore: renderScore,
@@ -167,30 +182,22 @@ function startLevel(id: number, attempt = Date.now() % 100_000): void {
 }
 
 function finish(outcome: { won: boolean; score: number; level: Level; movesLeft: number }): void {
-  if (outcome.score > progress.best) {
-    progress = { ...progress, best: outcome.score };
-    saveProgress(progress);
-    bestValue.textContent = `Best ${numbers.format(progress.best)}`;
-  }
+  progress = outcome.won
+    ? recordWin(progress, outcome.level.id, outcome.score, LEVELS.length)
+    : recordScore(progress, outcome.score);
+  saveProgress(storage, progress);
+  menu.update(progress);
+  bestValue.textContent = `Best ${numbers.format(progress.best)}`;
 
   const last = outcome.level.id >= LEVELS.length;
 
   if (outcome.won) {
-    const cleared = new Set(progress.cleared);
-    cleared.add(outcome.level.id);
-    progress = {
-      level: clampLevel(Math.max(progress.level, outcome.level.id + (last ? 0 : 1))),
-      best: progress.best,
-      cleared: [...cleared].sort((a, b) => a - b),
-    };
-    saveProgress(progress);
-
-    overlayKicker.textContent = last ? 'Full time' : `Level ${outcome.level.id} cleared`;
+    overlayKicker.textContent = last ? 'Full time' : `Match ${outcome.level.id} cleared`;
     overlayTitle.textContent = last ? 'You win the lot' : outcome.level.name;
     overlayBody.textContent = last
-      ? 'Every level cleared. Go again for a bigger score.'
+      ? 'Every match cleared. Go again for a bigger score.'
       : `${outcome.movesLeft} ${outcome.movesLeft === 1 ? 'move' : 'moves'} to spare.`;
-    overlayPrimary.textContent = last ? 'Play again' : 'Next level';
+    overlayPrimary.textContent = last ? 'Play again' : 'Next match';
     overlayPrimary.onclick = () => startLevel(last ? 1 : outcome.level.id + 1);
   } else {
     overlayKicker.textContent = 'No moves left';
@@ -201,8 +208,9 @@ function finish(outcome: { won: boolean; score: number; level: Level; movesLeft:
   }
 
   overlayScore.textContent = numbers.format(outcome.score);
-  overlaySecondary.textContent = 'Replay level';
+  overlaySecondary.textContent = 'Replay';
   overlaySecondary.onclick = () => startLevel(outcome.level.id);
+  overlayMenu.onclick = () => showMenu();
   overlay.hidden = false;
 }
 
@@ -218,13 +226,9 @@ window.addEventListener('orientationchange', () => window.setTimeout(() => game?
 window.addEventListener('resize', () => game?.fit());
 
 // Stop iOS double-tap zoom from stealing quick consecutive taps.
-document.addEventListener(
-  'gesturestart',
-  (event) => event.preventDefault(),
-  { passive: false },
-);
+document.addEventListener('gesturestart', (event) => event.preventDefault(), { passive: false });
 
-startLevel(progress.level);
+menu.show('menu');
 
 // ---------------------------------------------------------------------------
 // PWA
