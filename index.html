@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+    />
+    <title>Sixes</title>
+    <meta name="description" content="A match-three game played with sports balls. Line up six kinds of ball, build Strikers and Scrums, and clear the pitch." />
+    <meta name="theme-color" content="#031F1E" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/favicon.png" sizes="any" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Sixes" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="hud">
+        <div class="hud-row">
+          <div class="stat stat--level">
+            <span class="stat-label">Level</span>
+            <span class="stat-value" id="level-value">1</span>
+            <span class="stat-sub" id="level-name">Kick Off</span>
+          </div>
+
+          <div class="stat stat--score">
+            <span class="stat-label">Score</span>
+            <span class="stat-value stat-value--gold" id="score-value">0</span>
+            <span class="stat-sub" id="goal-value">of 3,000</span>
+          </div>
+
+          <div class="stat stat--moves">
+            <span class="stat-label">Moves</span>
+            <span class="stat-value" id="moves-value">20</span>
+            <span class="stat-sub" id="best-value">Best 0</span>
+          </div>
+        </div>
+
+        <div class="progress" role="progressbar" aria-labelledby="goal-value" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </header>
+
+      <main class="board" id="board">
+        <canvas id="canvas" aria-label="Sixes game board"></canvas>
+      </main>
+
+      <footer class="controls">
+        <button class="btn" id="hint-btn" type="button">Hint</button>
+        <p class="tagline" id="toast">Match three or more</p>
+        <button class="btn" id="restart-btn" type="button">Restart</button>
+      </footer>
+    </div>
+
+    <div class="overlay" id="overlay" hidden>
+      <div class="card" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
+        <p class="card-kicker" id="overlay-kicker">Full time</p>
+        <h1 class="card-title" id="overlay-title">Level complete</h1>
+        <p class="card-score" id="overlay-score">0</p>
+        <p class="card-body" id="overlay-body">You cleared the pitch.</p>
+        <div class="card-actions">
+          <button class="btn btn--primary" id="overlay-primary" type="button">Next level</button>
+          <button class="btn" id="overlay-secondary" type="button">Replay</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

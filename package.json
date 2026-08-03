@@ -1,0 +1,28 @@
+{
+  "name": "sixes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sixes — a match-3 PWA played with sports balls",
+  "scripts": {
+    "dev": "npm run icons && vite",
+    "icons": "node scripts/gen-icons.mjs",
+    "prebuild": "npm run icons",
+    "build": "vite build && node scripts/gen-sw.mjs",
+    "preview": "vite preview",
+    "start": "node server.js",
+    "test": "node --test \"test/*.test.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
