@@ -40,6 +40,12 @@ export interface Level {
  * 37 -> 56 -> 63 -> 82. What changed is that it climbs from a reachable
  * starting point instead of starting above one, and that the climb now shows
  * up in the score a player posts rather than in whether they pass at all.
+ *
+ * The six-ball run from Sixes to Golden Point is set the same way, but its
+ * goals are read straight off measured score distributions: each one is the
+ * quantile that lands a novice on a target clear rate, tapering from roughly
+ * two thirds down to about half so that a player who is improving still meets
+ * resistance. Its pressure climbs 29 -> 43 across the eight levels.
  */
 export const LEVELS: Level[] = [
   { id: 1, name: 'Kick Off', goal: 12_000, moves: 18, width: 8, height: 8, types: 5 },
@@ -48,13 +54,13 @@ export const LEVELS: Level[] = [
   { id: 4, name: 'Set Piece', goal: 16_000, moves: 14, width: 8, height: 8, types: 5 },
   // The sixth ball arrives — moves go back up while the player adjusts.
   { id: 5, name: 'Sixes', goal: 14_000, moves: 22, width: 8, height: 8, types: 6 },
-  { id: 6, name: 'Counter Attack', goal: 17_500, moves: 22, width: 8, height: 8, types: 6 },
-  { id: 7, name: 'Second Half', goal: 15_500, moves: 20, width: 8, height: 8, types: 6 },
-  { id: 8, name: 'Quarter Final', goal: 17_000, moves: 20, width: 8, height: 8, types: 6 },
-  { id: 9, name: 'Semi Final', goal: 16_000, moves: 18, width: 8, height: 8, types: 6 },
-  { id: 10, name: 'The Final', goal: 17_000, moves: 18, width: 8, height: 8, types: 6 },
-  { id: 11, name: 'Extra Time', goal: 16_000, moves: 16, width: 8, height: 8, types: 6 },
-  { id: 12, name: 'Golden Point', goal: 17_000, moves: 16, width: 8, height: 8, types: 6 },
+  { id: 6, name: 'Counter Attack', goal: 14_500, moves: 22, width: 8, height: 8, types: 6 },
+  { id: 7, name: 'Second Half', goal: 12_500, moves: 20, width: 8, height: 8, types: 6 },
+  { id: 8, name: 'Quarter Final', goal: 13_000, moves: 20, width: 8, height: 8, types: 6 },
+  { id: 9, name: 'Semi Final', goal: 11_500, moves: 18, width: 8, height: 8, types: 6 },
+  { id: 10, name: 'The Final', goal: 12_000, moves: 18, width: 8, height: 8, types: 6 },
+  { id: 11, name: 'Extra Time', goal: 10_500, moves: 16, width: 8, height: 8, types: 6 },
+  { id: 12, name: 'Golden Point', goal: 11_000, moves: 16, width: 8, height: 8, types: 6 },
 ];
 
 export interface GameCallbacks {

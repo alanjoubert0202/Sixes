@@ -103,21 +103,38 @@ therefore measured against weaker yardsticks — random legal moves for level 1,
 and a "novice" who takes the best swap about a third of the time thereafter.
 Clear rates over 60 seeded runs per cell, 95% confidence:
 
-| Level | Goal | Moves | Novice | Learner | Pressure |
-| --- | --- | --- | --- | --- | --- |
-| 1 Kick Off | 12,000 | 18 | 92% ±7 | 100% | 37 |
-| 2 First Half | 18,000 | 18 | 77% ±11 | 97% ±5 | 56 |
-| 3 Line Out | 16,000 | 16 | 73% ±11 | 100% | 63 |
-| 4 Set Piece | 16,000 | 14 | 75% ±11 | 92% ±7 | 82 |
-| 5 Sixes | 14,000 | 22 | 72% ±11 | 93% ±6 | 29 |
+| Level | Goal | Moves | Types | Novice | Learner | Pressure |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 Kick Off | 12,000 | 18 | 5 | 92% ±7 | 100% | 37 |
+| 2 First Half | 18,000 | 18 | 5 | 77% ±11 | 97% ±5 | 56 |
+| 3 Line Out | 16,000 | 16 | 5 | 73% ±11 | 100% | 63 |
+| 4 Set Piece | 16,000 | 14 | 5 | 75% ±11 | 92% ±7 | 82 |
+| 5 Sixes | 14,000 | 22 | 6 | 72% ±11 | 93% ±6 | 29 |
+| 6 Counter Attack | 14,500 | 22 | 6 | 57% ±13 | 80% ±10 | 30 |
+| 7 Second Half | 12,500 | 20 | 6 | 68% ±12 | 95% ±6 | 31 |
+| 8 Quarter Final | 13,000 | 20 | 6 | 67% ±12 | 73% ±11 | 33 |
+| 9 Semi Final | 11,500 | 18 | 6 | 68% ±12 | 85% ±9 | 36 |
+| 10 The Final | 12,000 | 18 | 6 | 52% ±13 | 93% ±6 | 37 |
+| 11 Extra Time | 10,500 | 16 | 6 | 57% ±13 | 92% ±7 | 41 |
+| 12 Golden Point | 11,000 | 16 | 6 | 50% ±13 | 72% ±11 | 43 |
 
 "Pressure" is `goal / moves²`, the quantity `test/levels.test.ts` requires to
-increase within a run of levels sharing a ball count. It rises steadily while
-the measured clear rate stays roughly flat, which is the intent: past level 1
-the early game separates players by the score they post, not by whether they
-pass. Note the confidence intervals — at this sample size a 73% and a 77% are
-not meaningfully different, so treat the ordering of adjacent levels as flat
-rather than as a ladder.
+increase within a run of levels sharing a ball count. It rises steadily across
+both runs — 37 to 82 on five balls, 29 to 43 on six — while the measured clear
+rate declines only gently, from about nine in ten at the start to about one in
+two at the end. That is the intent: the game should separate players mostly by
+the score they post, and only at the very end by whether they pass.
+
+The six-ball goals are read straight off the measured distributions rather than
+picked and then checked — each is the score quantile that lands a novice on a
+target clear rate. Level 6 is the exception: the smallest goal that still beat
+level 5's pressure was above its target, which is the constraint working as
+intended, since level 6 should be harder than the level before it.
+
+Read the confidence intervals before drawing conclusions from the ordering. At
+±12 points, level 8's 67% and level 9's 68% are the same number, and even the
+apparent dip at level 6 overlaps its neighbours. The declining trend across the
+table is real; the rank of any two adjacent levels is not.
 
 One caveat on the model: the bot's "skill" is how often it takes the highest
 scoring swap available, which is not the same as playing well. Grabbing points
