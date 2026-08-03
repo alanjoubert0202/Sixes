@@ -23,17 +23,21 @@ export interface Level {
  * README.md): the early levels sit well under what a casual run scores, the
  * last few sit slightly above it.
  *
- * Kick Off is the exception, and is deliberately pitched lower than the curve
- * would suggest. The simulated "casual" player takes the best available swap
- * half the time, which is *stronger* than someone opening the game for the
- * first time — they have not seen the board, do not line up cascades on
- * purpose, and are slow to spot a Striker. So level 1 is set below what a
- * player making arbitrary legal moves averages (~14,000 here), which means a
- * first attempt clears it and the game gets a chance to teach.
+ * The first two levels are the exception, and are pitched below what the curve
+ * alone would suggest, because the simulation flatters a beginner. Its "casual"
+ * player takes the best available swap half the time, which is *stronger* than
+ * someone opening the game for the first time — they have not seen the board,
+ * do not line up cascades on purpose, and are slow to spot a Striker.
+ *
+ * So the opening two are measured against weaker yardsticks. Kick Off is set
+ * below what arbitrary legal moves average (~14,000 over its 18 moves), so a
+ * first attempt clears it. First Half is set against a player who has finished
+ * one level and takes the best swap about a third of the time; 18,000 clears
+ * for four out of five of those, and for every player past that.
  */
 export const LEVELS: Level[] = [
   { id: 1, name: 'Kick Off', goal: 12_000, moves: 18, width: 8, height: 8, types: 5 },
-  { id: 2, name: 'First Half', goal: 28_000, moves: 18, width: 8, height: 8, types: 5 },
+  { id: 2, name: 'First Half', goal: 18_000, moves: 18, width: 8, height: 8, types: 5 },
   { id: 3, name: 'Line Out', goal: 28_000, moves: 16, width: 8, height: 8, types: 5 },
   { id: 4, name: 'Set Piece', goal: 24_000, moves: 14, width: 8, height: 8, types: 5 },
   // The sixth ball arrives — moves go back up while the player adjusts.

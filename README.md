@@ -98,10 +98,22 @@ stumbled into. `test/levels.test.ts` guards the shape of the curve.
 
 The simulation has one blind spot worth knowing about: its "casual" player is
 already *better* than a real first-timer, because taking the best available swap
-half the time beats not yet knowing that Strikers exist. Level 1 is therefore
-pitched against the *random*-play average instead — a player making arbitrary
-legal moves scores about 14,000 over its 18 moves, so a 12,000 goal clears on a
-first attempt roughly 70% of the time even with no idea what is going on.
+half the time beats not yet knowing that Strikers exist. The opening two levels
+are therefore measured against weaker yardsticks — random legal moves for level
+1, and a player who takes the best swap about a third of the time for level 2:
+
+| Level | Goal | Random | Novice | Learner |
+| --- | --- | --- | --- | --- |
+| 1 Kick Off | 12,000 | 69% | 95% | 100% |
+| 2 First Half | 18,000 | 20% | 80% | 100% |
+| 3 Line Out | 28,000 | — | 45% | 65% |
+| 4 Set Piece | 24,000 | — | 35% | 65% |
+| 5 Sixes | 14,000 | — | 65% | 95% |
+
+Levels 3 and 4 are where the game starts asking for power-ups to be built on
+purpose rather than stumbled into, which is deliberate — but it is also the
+steepest step in the table, and the place to look first if the difficulty ever
+needs revisiting again.
 
 ## PWA
 
