@@ -29,17 +29,23 @@ export interface Level {
  * someone opening the game for the first time — they have not seen the board,
  * do not line up cascades on purpose, and are slow to spot a Striker.
  *
- * So the opening two are measured against weaker yardsticks. Kick Off is set
+ * So the opening four are measured against weaker yardsticks. Kick Off is set
  * below what arbitrary legal moves average (~14,000 over its 18 moves), so a
- * first attempt clears it. First Half is set against a player who has finished
- * one level and takes the best swap about a third of the time; 18,000 clears
- * for four out of five of those, and for every player past that.
+ * first attempt clears it. Levels 2 to 4 are set against a player who takes the
+ * best swap about a third of the time — roughly someone a level or two in — and
+ * ease off from four clears in five down to about two in three, which is where
+ * Sixes picks up when the sixth ball arrives.
+ *
+ * Difficulty still climbs across all four: goal per move squared runs
+ * 37 -> 56 -> 63 -> 82. What changed is that it climbs from a reachable
+ * starting point instead of starting above one, and that the climb now shows
+ * up in the score a player posts rather than in whether they pass at all.
  */
 export const LEVELS: Level[] = [
   { id: 1, name: 'Kick Off', goal: 12_000, moves: 18, width: 8, height: 8, types: 5 },
   { id: 2, name: 'First Half', goal: 18_000, moves: 18, width: 8, height: 8, types: 5 },
-  { id: 3, name: 'Line Out', goal: 28_000, moves: 16, width: 8, height: 8, types: 5 },
-  { id: 4, name: 'Set Piece', goal: 24_000, moves: 14, width: 8, height: 8, types: 5 },
+  { id: 3, name: 'Line Out', goal: 16_000, moves: 16, width: 8, height: 8, types: 5 },
+  { id: 4, name: 'Set Piece', goal: 16_000, moves: 14, width: 8, height: 8, types: 5 },
   // The sixth ball arrives — moves go back up while the player adjusts.
   { id: 5, name: 'Sixes', goal: 14_000, moves: 22, width: 8, height: 8, types: 6 },
   { id: 6, name: 'Counter Attack', goal: 17_500, moves: 22, width: 8, height: 8, types: 6 },

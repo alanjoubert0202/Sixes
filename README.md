@@ -98,22 +98,32 @@ stumbled into. `test/levels.test.ts` guards the shape of the curve.
 
 The simulation has one blind spot worth knowing about: its "casual" player is
 already *better* than a real first-timer, because taking the best available swap
-half the time beats not yet knowing that Strikers exist. The opening two levels
-are therefore measured against weaker yardsticks — random legal moves for level
-1, and a player who takes the best swap about a third of the time for level 2:
+half the time beats not yet knowing that Strikers exist. The opening levels are
+therefore measured against weaker yardsticks — random legal moves for level 1,
+and a "novice" who takes the best swap about a third of the time thereafter.
+Clear rates over 60 seeded runs per cell, 95% confidence:
 
-| Level | Goal | Random | Novice | Learner |
-| --- | --- | --- | --- | --- |
-| 1 Kick Off | 12,000 | 69% | 95% | 100% |
-| 2 First Half | 18,000 | 20% | 80% | 100% |
-| 3 Line Out | 28,000 | — | 45% | 65% |
-| 4 Set Piece | 24,000 | — | 35% | 65% |
-| 5 Sixes | 14,000 | — | 65% | 95% |
+| Level | Goal | Moves | Novice | Learner | Pressure |
+| --- | --- | --- | --- | --- | --- |
+| 1 Kick Off | 12,000 | 18 | 92% ±7 | 100% | 37 |
+| 2 First Half | 18,000 | 18 | 77% ±11 | 97% ±5 | 56 |
+| 3 Line Out | 16,000 | 16 | 73% ±11 | 100% | 63 |
+| 4 Set Piece | 16,000 | 14 | 75% ±11 | 92% ±7 | 82 |
+| 5 Sixes | 14,000 | 22 | 72% ±11 | 93% ±6 | 29 |
 
-Levels 3 and 4 are where the game starts asking for power-ups to be built on
-purpose rather than stumbled into, which is deliberate — but it is also the
-steepest step in the table, and the place to look first if the difficulty ever
-needs revisiting again.
+"Pressure" is `goal / moves²`, the quantity `test/levels.test.ts` requires to
+increase within a run of levels sharing a ball count. It rises steadily while
+the measured clear rate stays roughly flat, which is the intent: past level 1
+the early game separates players by the score they post, not by whether they
+pass. Note the confidence intervals — at this sample size a 73% and a 77% are
+not meaningfully different, so treat the ordering of adjacent levels as flat
+rather than as a ladder.
+
+One caveat on the model: the bot's "skill" is how often it takes the highest
+scoring swap available, which is not the same as playing well. Grabbing points
+immediately tends to spend a Striker that a person would have saved and
+combined, so a greedier bot is not reliably a stronger one. The bands are
+useful for pitching a goal, not for ranking players.
 
 ## PWA
 
