@@ -20,11 +20,19 @@ export interface Level {
  * The two levers are how many ball types are in play — a sixth type roughly
  * halves how often a swap connects — and how many moves you get for the goal.
  * The numbers below are tuned against simulated play (see the notes in
- * README.md): early levels sit around half of what a casual run scores, the
+ * README.md): the early levels sit well under what a casual run scores, the
  * last few sit slightly above it.
+ *
+ * Kick Off is the exception, and is deliberately pitched lower than the curve
+ * would suggest. The simulated "casual" player takes the best available swap
+ * half the time, which is *stronger* than someone opening the game for the
+ * first time — they have not seen the board, do not line up cascades on
+ * purpose, and are slow to spot a Striker. So level 1 is set below what a
+ * player making arbitrary legal moves averages (~14,000 here), which means a
+ * first attempt clears it and the game gets a chance to teach.
  */
 export const LEVELS: Level[] = [
-  { id: 1, name: 'Kick Off', goal: 20_000, moves: 18, width: 8, height: 8, types: 5 },
+  { id: 1, name: 'Kick Off', goal: 12_000, moves: 18, width: 8, height: 8, types: 5 },
   { id: 2, name: 'First Half', goal: 28_000, moves: 18, width: 8, height: 8, types: 5 },
   { id: 3, name: 'Line Out', goal: 28_000, moves: 16, width: 8, height: 8, types: 5 },
   { id: 4, name: 'Set Piece', goal: 24_000, moves: 14, width: 8, height: 8, types: 5 },

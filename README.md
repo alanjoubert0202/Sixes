@@ -92,9 +92,16 @@ roughly halves how often a swap connects) and how many moves you get.
 Goals were set from simulated play rather than guessed. A scripted player was run
 over each configuration at several skill levels; a casual run — taking the
 best-scoring swap half the time — averages about 2,400 points a move at five ball
-types and about 900 at six. Early levels sit near half of that, the last few sit
+types and about 900 at six. Early levels sit well under that, the last few sit
 slightly above it, so they need power-ups to be built deliberately rather than
 stumbled into. `test/levels.test.ts` guards the shape of the curve.
+
+The simulation has one blind spot worth knowing about: its "casual" player is
+already *better* than a real first-timer, because taking the best available swap
+half the time beats not yet knowing that Strikers exist. Level 1 is therefore
+pitched against the *random*-play average instead — a player making arbitrary
+legal moves scores about 14,000 over its 18 moves, so a 12,000 goal clears on a
+first attempt roughly 70% of the time even with no idea what is going on.
 
 ## PWA
 
